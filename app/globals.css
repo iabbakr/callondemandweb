@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
+@theme {
+  /* This maps your mobile app colors to Tailwind variables */
+  --color-primary: #6200EE;
+  --color-accent: #E8DEF8;
+  --color-success: #4CAF50;
+  --color-error: #F44336;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Keep these for standard CSS usage if needed */
+  --primary: #6200EE;
+  --accent: #E8DEF8;
+  --success: #4CAF50;
+  --error: #F44336;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar for web dashboard */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* Mobile-style button active state */
+.btn-active:active {
+  transform: scale(0.96);
+  transition: transform 0.1s;
 }

@@ -3,101 +3,108 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { 
   Home, 
   Diamond, 
   Wallet, 
   User, 
   Bell, 
-  Headset 
+  Headset,
+  LogOut
 } from "lucide-react";
 
+// ✅ FIXED: Ensure these match your folder names exactly
 const NAV_ITEMS = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Rewards", href: "/reward", icon: Diamond },
+  { label: "Rewards", href: "/rewards", icon: Diamond },
   { label: "Finance", href: "/finance", icon: Wallet },
   { label: "Profile", href: "/profile", icon: User },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logOut } = useAuth(); // Connect to your real Auth logic
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* --- DESKTOP SIDEBAR --- */}
-      <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-200 fixed h-full">
-        <div className="p-6">
-          <h1 className="text-[#6200EE] font-bold text-xl tracking-tight">CallOnDemand</h1>
+      <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-200 fixed h-full shadow-sm">
+        <div className="p-8">
+          <h1 className="text-[#6200EE] font-black text-xl tracking-tighter">CallOnDemand</h1>
         </div>
         
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="flex-1 px-4 space-y-1.5 mt-2">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
                   isActive 
-                    ? "bg-[#E8DEF8] text-[#6200EE]" 
-                    : "text-gray-500 hover:bg-gray-100"
+                    ? "bg-[#6200EE] text-white shadow-lg shadow-primary/20" 
+                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
                 }`}
               >
-                <item.icon size={20} />
+                <item.icon size={18} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
-           <button className="flex w-full items-center gap-3 px-4 py-3 text-gray-500 hover:text-red-500 transition-colors">
-              <User size={20} /> Logout
+        <div className="p-6 border-t border-gray-100">
+           <button 
+            onClick={logOut}
+            className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 font-bold text-sm hover:text-red-500 transition-colors"
+           >
+              <LogOut size={18} /> Logout
            </button>
         </div>
       </aside>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <main className="flex-1 md:ml-64 flex flex-col">
-        {/* Top Header (Greeting & Notification Icons) */}
-        <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-10">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
+        {/* Top Header */}
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-40">
           <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Welcome back</span>
-            <span className="text-sm font-bold text-gray-800">User 👋</span>
+            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Authorized Access</span>
+            <span className="text-sm font-black text-gray-900">
+              Hello, {user?.displayName?.split(' ')[0] || 'User'} 👋
+            </span>
           </div>
           
-          <div className="flex items-center gap-3">
-            <button className="p-2 rounded-full bg-gray-50 text-[#6200EE] hover:bg-[#E8DEF8] transition-colors relative">
+          <div className="flex items-center gap-4">
+            <button className="p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-[#6200EE] transition-all relative">
               <Headset size={20} />
             </button>
-            <button className="p-2 rounded-full bg-gray-50 text-[#6200EE] hover:bg-[#E8DEF8] transition-colors relative">
+            <button className="p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-[#6200EE] transition-all relative">
               <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
           </div>
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-8 pb-32 md:pb-8 overflow-x-hidden">
           {children}
         </div>
 
         {/* --- MOBILE BOTTOM NAV --- */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 h-20 px-6 flex items-center justify-between z-50">
+        <nav className="md:hidden fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-lg border border-gray-100 h-20 px-8 flex items-center justify-between z-50 rounded-[2.5rem] shadow-2xl shadow-black/5">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 transition-colors ${
-                  isActive ? "text-[#6200EE]" : "text-gray-400"
+                className={`flex flex-col items-center gap-1 transition-all ${
+                  isActive ? "text-[#6200EE] scale-110" : "text-gray-300"
                 }`}
               >
-                <div className={`p-1.5 rounded-full ${isActive ? 'bg-[#E8DEF8]' : ''}`}>
-                   <item.icon size={22} />
-                </div>
-                <span className="text-[10px] font-bold">{item.label}</span>
+                <item.icon size={22} strokeWidth={isActive ? 3 : 2} />
+                {isActive && <div className="w-1 h-1 bg-[#6200EE] rounded-full" />}
               </Link>
             );
           })}
