@@ -19,18 +19,45 @@ export interface CartItem {
   desc?: string;
 }
 
-export interface UserProfile {
+export type UserProfile = {
   uid: string;
-  role: "admin" | "user" | "agent" | "operator";
+  fullName: string;
+  username: string;
+  email: string;
+  phoneNumber?: string;
+  location?: string;
+  bankName?: string | null;
+  bankCode?: string | null;
+  accountNumber?: string | null;
+  accountName?: string | null;
+  photoURL?: string | null;
+  referralCode?: string;
+  referredBy?: string | null;
+  referralCount?: number;
   balance: number;
   bonusBalance: number;
-  fullName: string;
-  referralCode?: string;
-  paystackRecipientCode?: string; // 👈 Add this line (with the question mark for safety)
-  bankName?: string;
-  accountNumber?: string;
-  // ... other fields
-}
+  trustScore?: number;
+  createdAt?: Date;
+  paystackRecipientCode?: string | null;
+  role: "admin" | "user" | "agent" | "operator";
+  preferences?: {
+    food: {
+      breakfast: string[];
+      lunch: string[];
+      dinner: string[];
+      snacks: string[];
+    };
+    laundry: string;
+    logistics: string;
+  };
+  preferencesCompleted?: boolean;
+  preferencesSkipped?: boolean;
+  preferencesCompletedAt?: Date;
+  tasksCompleted?: number;
+  streakCount?: number;
+  lastCheckIn?: Date;
+};
+
 
 interface AppContextProps {
   userProfile: UserProfile | null;
