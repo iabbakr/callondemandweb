@@ -31,6 +31,8 @@ export type UserProfile = {
   accountNumber?: string | null;
   accountName?: string | null;
   photoURL?: string | null;
+  profilePicPublicId?: string;
+  profilePic?: string | null;
   referralCode?: string;
   referredBy?: string | null;
   referralCount?: number;
