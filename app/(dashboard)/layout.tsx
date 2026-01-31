@@ -15,6 +15,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+
+
+import { useApp } from "@/context/AppContext";
+
+
+
 // ✅ UPDATED: Href for Home now matches your redirect logic (/dashboard)
 const NAV_ITEMS = [
   { label: "Home", href: "/dashboard", icon: Home },
@@ -26,6 +32,11 @@ const NAV_ITEMS = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logOut } = useAuth();
+
+   const { userProfile, balance, transactions, isLoading } = useApp();
+  
+    
+    const firstName = userProfile?.fullName?.split(' ')[0] || 'User';
 
   /**
    * ✅ IMPROVED: Logic to keep parent tabs active when on sub-pages
@@ -80,9 +91,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Top Header */}
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-40">
           <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Authorized Access</span>
+            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">CallonDemand</span>
             <span className="text-sm font-black text-gray-900">
-              Hello, {user?.displayName?.split(' ')[0] || 'User'} 👋
+              Hello, {firstName} 👋 👋
             </span>
           </div>
           
