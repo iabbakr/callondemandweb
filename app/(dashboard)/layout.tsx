@@ -2,8 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useApp } from "@/context/AppContext";
 import { 
   Home, 
   Diamond, 
@@ -15,32 +16,37 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-
-
-import { useApp } from "@/context/AppContext";
-
-
-
-// ✅ UPDATED: Href for Home now matches your redirect logic (/dashboard)
+// ✅ Navigation items matching your folder structure
 const NAV_ITEMS = [
   { label: "Home", href: "/dashboard", icon: Home },
-  { label: "Rewards", href: "/rewards", icon: Diamond },
+  { label: "Reward", href: "/reward", icon: Diamond },
   { label: "Finance", href: "/finance", icon: Wallet },
   { label: "Profile", href: "/profile", icon: User },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logOut } = useAuth();
-
-   const { userProfile, balance, transactions, isLoading } = useApp();
+  const router = useRouter();
+  const { logOut } = useAuth();
+  const { userProfile } = useApp();
   
-    
-    const firstName = userProfile?.fullName?.split(' ')[0] || 'User';
+  const firstName = userProfile?.fullName?.split(' ')[0] || 'User';
 
   /**
-   * ✅ IMPROVED: Logic to keep parent tabs active when on sub-pages
-   * e.g., if on /finance/history, the "Finance" tab stays active.
+   * ✅ Handle Logout and Redirect
+   */
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      // Using window.location.href for a clean state reset on logout
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  /**
+   * ✅ Logic to keep parent tabs active when on sub-pages
    */
   const checkActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -78,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="p-6 border-t border-gray-100">
            <button 
-            onClick={logOut}
+            onClick={handleLogout}
             className="flex w-full items-center gap-3 px-4 py-3 text-gray-400 font-bold text-sm hover:text-red-500 transition-colors"
            >
               <LogOut size={18} /> Logout
@@ -93,12 +99,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex flex-col">
             <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">CallonDemand</span>
             <span className="text-sm font-black text-gray-900">
-              Hello, {firstName} 👋 👋
+              Hello, {firstName} 👋
             </span>
           </div>
           
           <div className="flex items-center gap-4">
-            {/* ✅ UPDATED: Support Link wired up */}
             <Link 
               href="/support"
               className={cn(
