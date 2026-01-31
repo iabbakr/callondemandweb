@@ -54,7 +54,13 @@ export default function FinancePage() {
   };
 
   const handleWithdraw = async () => {
-    if (!userProfile?.paystackRecipientCode) {
+    // 1. First, check if userProfile exists at all to satisfy TypeScript
+    if (!userProfile) {
+      return toast.error("User profile not loaded yet.");
+    }
+
+    // 2. Now check for the specific bank details
+    if (!userProfile.paystackRecipientCode) {
       return toast.error("Please verify bank details in Profile first.");
     }
     
@@ -70,6 +76,7 @@ export default function FinancePage() {
       const res = await api.post("/api/paystack/transfer", {
         userId: user?.uid,
         amount: amount,
+        // TypeScript is now happy because we checked 'if (!userProfile)' above
         recipientCode: userProfile.paystackRecipientCode,
       });
 

@@ -13,10 +13,11 @@ import {
   Headset,
   LogOut
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-// ✅ FIXED: Ensure these match your folder names exactly
+// ✅ UPDATED: Href for Home now matches your redirect logic (/dashboard)
 const NAV_ITEMS = [
-  { label: "Home", href: "/", icon: Home },
+  { label: "Home", href: "/dashboard", icon: Home },
   { label: "Rewards", href: "/rewards", icon: Diamond },
   { label: "Finance", href: "/finance", icon: Wallet },
   { label: "Profile", href: "/profile", icon: User },
@@ -24,7 +25,16 @@ const NAV_ITEMS = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logOut } = useAuth(); // Connect to your real Auth logic
+  const { user, logOut } = useAuth();
+
+  /**
+   * ✅ IMPROVED: Logic to keep parent tabs active when on sub-pages
+   * e.g., if on /finance/history, the "Finance" tab stays active.
+   */
+  const checkActive = (href: string) => {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(href);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -36,18 +46,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         <nav className="flex-1 px-4 space-y-1.5 mt-2">
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = checkActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all",
                   isActive 
                     ? "bg-[#6200EE] text-white shadow-lg shadow-primary/20" 
                     : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
-                }`}
+                )}
               >
-                <item.icon size={18} />
+                <item.icon size={18} strokeWidth={isActive ? 3 : 2} />
                 {item.label}
               </Link>
             );
@@ -76,9 +87,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-[#6200EE] transition-all relative">
+            {/* ✅ UPDATED: Support Link wired up */}
+            <Link 
+              href="/support"
+              className={cn(
+                "p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-[#6200EE] transition-all relative",
+                pathname === "/support" && "bg-primary/10 text-[#6200EE]"
+              )}
+            >
               <Headset size={20} />
-            </button>
+            </Link>
+            
             <button className="p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-[#6200EE] transition-all relative">
               <Bell size={20} />
               <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
@@ -94,17 +113,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* --- MOBILE BOTTOM NAV --- */}
         <nav className="md:hidden fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-lg border border-gray-100 h-20 px-8 flex items-center justify-between z-50 rounded-[2.5rem] shadow-2xl shadow-black/5">
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = checkActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-1 transition-all ${
+                className={cn(
+                  "flex flex-col items-center gap-1 transition-all",
                   isActive ? "text-[#6200EE] scale-110" : "text-gray-300"
-                }`}
+                )}
               >
                 <item.icon size={22} strokeWidth={isActive ? 3 : 2} />
-                {isActive && <div className="w-1 h-1 bg-[#6200EE] rounded-full" />}
+                {isActive && <div className="w-1.5 h-1.5 bg-[#6200EE] rounded-full animate-in zoom-in" />}
               </Link>
             );
           })}

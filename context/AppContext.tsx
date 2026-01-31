@@ -26,6 +26,9 @@ export interface UserProfile {
   bonusBalance: number;
   fullName: string;
   referralCode?: string;
+  paystackRecipientCode?: string; // 👈 Add this line (with the question mark for safety)
+  bankName?: string;
+  accountNumber?: string;
   // ... other fields
 }
 
